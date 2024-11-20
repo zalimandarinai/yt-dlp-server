@@ -1,18 +1,32 @@
-# Use a Docker image that includes ffmpeg and Python pre-installed
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11
+# Stage 1: Build stage for installing dependencies
+FROM python:3.11-bullseye as builder
 
-# Set the working directory in the container
+# Set up environment
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install ffmpeg and other system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ffmpeg && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Stage 2: Final container
+FROM python:3.11-slim
+
+# Set the working directory
 WORKDIR /app
 
-# Copy application files
+# Copy application files to the container
 COPY . .
+
+# Copy ffmpeg from builder stage to the final container
+COPY --from=builder /usr/bin/ffmpeg /usr/bin/ffprobe /usr/bin/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set the port environment variable for Render
+# Expose the port for Render
 ENV PORT 10000
 EXPOSE $PORT
 
-# Command to run the application
+# Run the application
 CMD ["python", "app.py"]
