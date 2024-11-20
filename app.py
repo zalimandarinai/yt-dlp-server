@@ -1,37 +1,51 @@
 from flask import Flask, request, jsonify
-import subprocess
+from google.cloud import storage
 import os
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET'])
+# Set up Google Cloud credentials (make sure your JSON file is set up properly in Render)
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/etc/secrets/keyfile.json"
+
+# Initialize the Google Cloud Storage client
+storage_client = storage.Client()
+
+# Replace this with your Google Cloud Storage bucket name
+BUCKET_NAME = 'your_bucket_name_here'
+
+@app.route('/')
 def home():
-    return "App is running!", 200
+    return "YouTube Video Uploader is Running"
 
 @app.route('/download', methods=['POST'])
-def download_video():
-    youtube_url = request.json.get('url')
-    output_dir = "/tmp/videos"
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, "%(title)s.%(ext)s")
-    cookies_path = "/app/cookies.txt"  # This must match the location of cookies.txt in your Render instance
-
+def download():
     try:
-        # Run yt-dlp with cookies for authentication
-        subprocess.run(
-            [
-                "yt-dlp",
-                "--cookies", cookies_path,  # Use cookies for authentication
-                "--ffmpeg-location", "/usr/bin/ffmpeg",
-                youtube_url,
-                "-o", output_path
-            ],
-            check=True
-        )
-        return jsonify({"message": "Download successful", "path": output_path}), 200
+        # Get the incoming JSON request data
+        data = request.json
+        if not data or 'video_url' not in data:
+            return jsonify({"error": "Invalid request, 'video_url' is required"}), 400
+        
+        video_url = data['video_url']
+
+        # Use youtube-dl or yt-dlp to download the video
+        video_filename = "downloaded_video.mp4"
+        
+        os.system(f"yt-dlp -o {video_filename} {video_url}")
+
+        # Upload to Google Cloud Storage
+        bucket = storage_client.bucket(BUCKET_NAME)
+        blob = bucket.blob(video_filename)
+        blob.upload_from_filename(video_filename)
+
+        # Delete the local file after upload
+        os.remove(video_filename)
+
+        return jsonify({"message": "Video uploaded successfully"}), 200
+
     except Exception as e:
+        # Print error to console for debugging and return an error response
+        print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=8080)
