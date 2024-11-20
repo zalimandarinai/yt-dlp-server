@@ -28,4 +28,4 @@ def download_video():
 if __name__ == '__main__':
     # Use the PORT environment variable provided by Render
     port = int(os.environ.get('PORT', 5000))  # Defaults to 5000 if not set
-    app.run(host='
+    app.run(host='0.0.0.0', port=port)
