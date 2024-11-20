@@ -16,3 +16,4 @@ EXPOSE $PORT
 
 # Run the app
 CMD ["python", "app.py"]
+
