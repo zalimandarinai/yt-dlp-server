@@ -1,5 +1,9 @@
-# Use a pre-built Python image with ffmpeg installed
-FROM jrottenberg/ffmpeg:4.4-python3.11
+# Use an official Python image
+FROM python:3.11-slim
+
+# Install ffmpeg and other dependencies
+RUN apt-get update && apt-get install -y ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
 WORKDIR /app
