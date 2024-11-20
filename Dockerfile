@@ -1,16 +1,16 @@
-# Use a Docker image that comes with Python and ffmpeg pre-installed
-FROM ghcr.io/jrottenberg/ffmpeg:4.4-python311
+# Use a Docker image that includes ffmpeg and Python pre-installed
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy application files to the container
+# Copy application files
 COPY . .
 
-# Install Python dependencies from requirements.txt
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set the port for Render
+# Set the port environment variable for Render
 ENV PORT 10000
 EXPOSE $PORT
 
