@@ -1,16 +1,18 @@
-# Use a base image that includes Python and ffmpeg
-FROM python:3.11-slim-bullseye
-
-# Set environment variable to disable interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# Use a Docker image that comes with Python and ffmpeg pre-installed
+FROM ghcr.io/jrottenberg/ffmpeg:4.4-python311
 
 # Set the working directory
 WORKDIR /app
 
-# Copy application files
+# Copy application files to the container
 COPY . .
 
-# Install ffmpeg using a direct URL download method without apt-get
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -L https://john
+# Install Python dependencies from requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Set the port for Render
+ENV PORT 10000
+EXPOSE $PORT
+
+# Command to run the application
+CMD ["python", "app.py"]
