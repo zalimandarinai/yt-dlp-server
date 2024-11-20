@@ -1,23 +1,18 @@
-# Base image with Python
-FROM python:3.11-slim
+# Use a pre-built Python image with ffmpeg installed
+FROM jrottenberg/ffmpeg:4.4-python3.11
 
-# Install ffmpeg and other necessary tools
-RUN apt-get update && \
-    apt-get install -y ffmpeg && \
-    rm -rf /var/lib/apt/lists/*
-
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the application code into the container
+# Copy app files to the container
 COPY . .
 
-# Expose the port Render will use
-EXPOSE 10000
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the Flask app
+# Expose the port for Render
+ENV PORT 10000
+EXPOSE $PORT
+
+# Run the app
 CMD ["python", "app.py"]
