@@ -10,8 +10,9 @@ WORKDIR /app
 # Copy app files to the container
 COPY . .
 
-# Update package lists and install ffmpeg
-RUN apt-get clean && \
+# Fix missing partial directory and install ffmpeg
+RUN mkdir -p /var/lib/apt/lists/partial && \
+    apt-get clean && \
     apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/*
