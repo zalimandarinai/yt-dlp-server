@@ -14,14 +14,14 @@ def download_video():
     output_dir = "/tmp/videos"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "%(title)s.%(ext)s")
-    cookies_path = "/app/cookies.txt"  # Path to cookies file on Render
+    cookies_path = "/app/cookies.txt"  # This must match the location of cookies.txt in your Render instance
 
     try:
         # Run yt-dlp with cookies for authentication
         subprocess.run(
             [
                 "yt-dlp",
-                "--cookies", cookies_path,
+                "--cookies", cookies_path,  # Use cookies for authentication
                 "--ffmpeg-location", "/usr/bin/ffmpeg",
                 youtube_url,
                 "-o", output_path
@@ -33,6 +33,5 @@ def download_video():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Trigger Docker deployment (added comment to force redeployment)
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
