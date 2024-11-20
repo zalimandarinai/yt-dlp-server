@@ -1,5 +1,5 @@
-# Use a slim Python image as the base
-FROM python:3.11-slim
+# Use Debian-based image to avoid read-only filesystem issues
+FROM python:3.11
 
 # Disable interactive prompts in the container
 ENV DEBIAN_FRONTEND=noninteractive
@@ -10,11 +10,10 @@ WORKDIR /app
 # Copy app files to the container
 COPY . .
 
-# Fix missing directory and install ffmpeg
-RUN mkdir -p /var/lib/apt/lists/partial && \
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y ffmpeg && \
     apt-get clean && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
