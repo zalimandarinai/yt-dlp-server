@@ -1,5 +1,5 @@
-# Use Debian-based image to avoid read-only filesystem issues
-FROM python:3.11
+# Use an image with ffmpeg pre-installed
+FROM jrottenberg/ffmpeg:4.4-python3.11
 
 # Disable interactive prompts in the container
 ENV DEBIAN_FRONTEND=noninteractive
@@ -9,12 +9,6 @@ WORKDIR /app
 
 # Copy app files to the container
 COPY . .
-
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y ffmpeg && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
