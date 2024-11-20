@@ -1,5 +1,5 @@
-# Use an image with ffmpeg pre-installed
-FROM jrottenberg/ffmpeg:4.4-python3.11
+# Use an image that already includes ffmpeg and Python 3
+FROM tiangolo/uvicorn-gunicorn:python3.11
 
 # Disable interactive prompts in the container
 ENV DEBIAN_FRONTEND=noninteractive
