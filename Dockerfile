@@ -1,13 +1,10 @@
-# Use a pre-built image with Python and ffmpeg
-FROM python:3.11-bullseye
-
-# Disable interactive prompts in the container
-ENV DEBIAN_FRONTEND=noninteractive
+# Use an image with both ffmpeg and Python already installed
+FROM jrottenberg/ffmpeg:4.4-python
 
 # Set the working directory
 WORKDIR /app
 
-# Copy app files to the container
+# Copy application files
 COPY . .
 
 # Install Python dependencies
