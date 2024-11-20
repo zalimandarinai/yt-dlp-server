@@ -10,9 +10,10 @@ WORKDIR /app
 # Copy app files to the container
 COPY . .
 
-# Update package lists and install ffmpeg, add --fix-missing flag
-RUN apt-get clean && \
-    apt-get update --fix-missing && \
+# Fix missing directory and install ffmpeg
+RUN mkdir -p /var/lib/apt/lists/partial && \
+    apt-get clean && \
+    apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/*
 
