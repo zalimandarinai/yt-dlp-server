@@ -4,6 +4,10 @@ import os
 
 app = Flask(__name__)
 
+@app.route('/', methods=['GET'])
+def home():
+    return "App is running!", 200
+
 @app.route('/download', methods=['POST'])
 def download_video():
     youtube_url = request.json.get('url')
