@@ -14,11 +14,18 @@ def download_video():
     output_dir = "/tmp/videos"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "%(title)s.%(ext)s")
+    cookies_path = "/app/cookies.txt"
 
     try:
-        # Run yt-dlp with ffmpeg location specified
+        # Run yt-dlp with cookies
         subprocess.run(
-            ["yt-dlp", "--ffmpeg-location", "/usr/bin/ffmpeg", youtube_url, "-o", output_path],
+            [
+                "yt-dlp",
+                "--cookies", cookies_path,
+                "--ffmpeg-location", "/usr/bin/ffmpeg",
+                youtube_url,
+                "-o", output_path
+            ],
             check=True
         )
         return jsonify({"message": "Download successful", "path": output_path}), 200
@@ -26,6 +33,5 @@ def download_video():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Use the PORT environment variable provided by Render
-    port = int(os.environ.get('PORT', 5000))  # Defaults to 5000 if not set
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
