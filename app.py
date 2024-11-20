@@ -16,9 +16,9 @@ def download_video():
     output_path = os.path.join(output_dir, "%(title)s.%(ext)s")
 
     try:
-        # Run yt-dlp to download the video
+        # Run yt-dlp with ffmpeg location specified
         subprocess.run(
-            ["yt-dlp", youtube_url, "-o", output_path],
+            ["yt-dlp", "--ffmpeg-location", "/usr/bin/ffmpeg", youtube_url, "-o", output_path],
             check=True
         )
         return jsonify({"message": "Download successful", "path": output_path}), 200
@@ -28,4 +28,4 @@ def download_video():
 if __name__ == '__main__':
     # Use the PORT environment variable provided by Render
     port = int(os.environ.get('PORT', 5000))  # Defaults to 5000 if not set
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='
